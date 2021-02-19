@@ -126,10 +126,14 @@ class ZStackExperiment(experiment.Experiment):
                 for camera in cameras:
                     cameraReadyTime = max(cameraReadyTime,
                             self.getTimeWhenCameraCanExpose(table, camera))
-        if(not self.zPositioner.digital):
-            table.addAction(max(curTime + stabilizationTime, cameraReadyTime),
-                            self.zPositioner, self.zStart)
-
+            if(self.zPositioner.digital):
+                #With a digital stack assumption is the remote monitors position
+                #or count to know when to return to start. 
+                table.addToggle(max(curTime + stabilizationTime, cameraReadyTime),
+                                self.zPositioner)
+            else:
+                table.addAction(max(curTime + stabilizationTime, cameraReadyTime),
+                                self.zPositioner, self.zStart)
         return table
 
 
