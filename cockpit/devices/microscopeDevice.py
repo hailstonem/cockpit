@@ -509,12 +509,16 @@ class _MicroscopeStageAxis:
         #
         zStart=zStart*self._units_per_micron
         sliceHeight=sliceHeight*self._units_per_micron
-        print ("now call microscope to setup digital", zStart,
-               sliceHeight, numSlices)
         status=self._axis.setupDigitalStack(zStart, sliceHeight, numSlices)
-        if status == 0:
+        if status !=0:
+            events.subscribe(events.CLEANUP_AFTER_EXPERIMENT,
+                             self.cancelDigitalStack)
+        else:
             print ("digital stack not avalibale")
         return(status)
+
+    def cancelDigitalStack(self):
+        self._axis.cancelDigitalStack()
 
 class MicroscopeStage(MicroscopeBase):
     """Device class for a Python microscope StageDevice.
