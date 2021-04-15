@@ -79,14 +79,12 @@ class BiasImageDatasetExperiment(immediateMode.ImmediateModeExperiment):
         camera = activeCams[0]
 
         aodev = depot.getDeviceWithName("ao")  # IS THIS THE CORRECT DEVICE NAME?
-        """
+
         try:
             offset = aodev.proxy.get_system_flat()  # assumes the correction for flat has already been done.
         except:
             print("Failed to Get system flat")
             offset = None
-        """
-
 
         biaslist, fprefix, newarea = self.abb_generator.__next__()
         imlist = []
@@ -94,7 +92,7 @@ class BiasImageDatasetExperiment(immediateMode.ImmediateModeExperiment):
 
         for abb in biaslist:
             try:
-                aodev.proxy.set_phase(abb)#, )offset)
+                aodev.proxy.set_phase(abb, offset)
             except:
                 dm_set_failure = True
 
