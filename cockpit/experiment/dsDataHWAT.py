@@ -114,9 +114,12 @@ class ATBiasImageDatasetExperiment(Experiment):
                 # Image the sample.
                 for cameras, lightTimePairs in self.exposureSettings:
                     curTime = self.expose(curTime, cameras, lightTimePairs, table)
-        # TypeError: '>' not supported between instances of 'list' and 'float'
-        self.aodev.proxy.queue_patterns(acc_patterns)
-        
+
+        # queue all patterns? Is this too many?
+        self.aodev.proxy.queue_patterns(np.array(acc_patterns))
+
+        ###Not sure how to set up stage movement triggers? What is the executor?
+
     def makeBiasPolytope(self, start_aberrations, offset_axes, nk, steps=(1,)):
         """Return list of list of zernike amplitudes ('betas') for generating cross-polytope pattern of psfs
         """
