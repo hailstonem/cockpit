@@ -9,6 +9,7 @@ import cockpit.util.threads
 import cockpit.interfaces.imager as imager
 import cockpit.interfaces.stageMover
 import decimal
+
 # import cockpit.util.user
 import wx
 import os
@@ -44,7 +45,7 @@ class ATBiasImageDatasetExperiment(Experiment):
         saveprefix="BIDE_",
         altBottom=0,
         zHeight=0,
-        sliceHeight=0 ,
+        sliceHeight=0,
         exposureSettings=[],
         **kwargs,
     ):
@@ -61,49 +62,55 @@ class ATBiasImageDatasetExperiment(Experiment):
         except:
             self.saveBasePath = os.path.join(os.path.expanduser("~"), saveprefix)
 
-        self.numReps = len(applied_steps)* len(applied_modes) * areas
+        self.numReps = len(applied_steps) * len(applied_modes) * areas
 
         # Set savepath to '' to prevent saving images. We will save our own images,
         # because setting filenames using Experiment/DataSaver look like it is
         # going to require a bunch of complicated subclassing
-        self.zPositioner=None
-		
+        self.zPositioner = None
+
         self.aodev = cockpit.depot.getDeviceWithName("ao")
         self.dmHandler = cockpit.depot.getDeviceWithName("dm").handler
-		
-        super().__init__(numReps=self.numReps, repDuration=repDuration,altBottom=altBottom,
-        zHeight=zHeight,sliceHeight=sliceHeight,zPositioner=self.zPositioner,exposureSettings=exposureSettings,otherHandlers=[cockpit.depot.getDeviceWithName("dm").handler],**kwargs)
+
+        super().__init__(
+            numReps=self.numReps,
+            repDuration=repDuration,
+            altBottom=altBottom,
+            zHeight=zHeight,
+            sliceHeight=sliceHeight,
+            zPositioner=self.zPositioner,
+            exposureSettings=exposureSettings,
+            otherHandlers=[cockpit.depot.getDeviceWithName("dm").handler],
+            **kwargs,
+        )
 
         # override cameraToImageCount so bias images are correctly saved to individual files
         # (necessary if using DataSaver)
         self.cameraToImageCount = 2 * len(bias_modes) + 1
 
-
-        
         self.table = None  # Apparently we need this, even though we're not using it? suspect there is a problem with ImmediateModeExperiment
         self.time_start = time.time()
-        
-    ## Create the ActionTable needed to run the experiment. We do three
-    # Z-stacks for three different angles, and take five images at each
-    # Z-slice, one for each phase.
+
+    ## Create the ActionTable needed to run the experiment. We loop
+    # over each set of aberrations and add both camera and dm triggers
     def generateActions(self):
         table = actionTable.ActionTable()
-        curTime=0
-		
-        delayBeforeImaging=decimal.Decimal('.001')
+        curTime = 0
+
+        delayBeforeImaging = decimal.Decimal(".001")
         acc_patterns = []
         for biaslist, fprefix, newarea in self.abb_generator:
-        
+
             acc_patterns.extend(biaslist)
-            
+
             for abb in biaslist:
-            
-                self.dmHandler.addToggle(curTime,table)
+
+                self.dmHandler.addToggle(curTime, table)
                 curTime += decimal.Decimal(self.dmHandler.getMovementTime())
-                curTime += decimal.Decimal('.001')
+                curTime += decimal.Decimal(".001")
 
                 curTime += delayBeforeImaging
-                
+
                 # Image the sample.
                 for cameras, lightTimePairs in self.exposureSettings:
                     curTime = self.expose(curTime, cameras, lightTimePairs, table)
