@@ -91,7 +91,7 @@ class BiasImageDatasetExperiment(immediateMode.ImmediateModeExperiment):
         except:
             print("Failed to Get system flat")
             offset = None
-
+        print(offset)
 
         biaslist, fprefix, newarea = self.abb_generator.__next__()
 

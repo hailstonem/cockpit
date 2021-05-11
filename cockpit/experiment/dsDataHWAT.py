@@ -72,11 +72,11 @@ class ATBiasImageDatasetExperiment(Experiment):
         self.dmHandler = cockpit.depot.getDeviceWithName("dm").handler
 		
         super().__init__(numReps=self.numReps, repDuration=repDuration,altBottom=altBottom,
-        zHeight=zHeight,sliceHeight=sliceHeight,zPositioner=self.zPositioner,exposureSettings=exposureSettings,otherHandlers=[cockpit.depot.getDeviceWithName("dm").handler],**kwargs)
+        zHeight=zHeight,sliceHeight=sliceHeight,zPositioner=self.zPositioner,exposureSettings=exposureSettings,otherHandlers=[cockpit.depot.getDeviceWithName("dm").handler])
 
         # override cameraToImageCount so bias images are correctly saved to individual files
         # (necessary if using DataSaver)
-        self.cameraToImageCount = 2 * len(bias_modes) + 1
+        #self.cameraToImageCount = [2 * len(bias_modes) + 1]
 
 
         
