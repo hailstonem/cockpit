@@ -17,6 +17,7 @@ import time
 import numpy as np
 import imageio
 
+from microAO import aoAlg
 import cockpit.util.userConfig as Config
 
 
@@ -35,9 +36,9 @@ class ATBiasImageDatasetExperiment(Experiment):
         self,
         *args,
         bias_modes=(4, 5, 6, 7, 10),
-        abb_magnitude=5,
-        applied_modes=(4, 5, 6, 7, 10),
-        applied_step=50,
+        abb_magnitude=4,
+        applied_modes=(4,),
+        applied_step=8,
         numReps=1,
         initial_abb=None,
         repDuration=4,
@@ -71,7 +72,6 @@ class ATBiasImageDatasetExperiment(Experiment):
 
         self.aodev = cockpit.depot.getDeviceWithName("ao")
         self.dmHandler = cockpit.depot.getDeviceWithName("dm").handler
-		
         super().__init__(
             numReps=self.numReps,
             repDuration=repDuration,
@@ -81,12 +81,13 @@ class ATBiasImageDatasetExperiment(Experiment):
             zPositioner=self.zPositioner,
             exposureSettings=exposureSettings,
             otherHandlers=[cockpit.depot.getDeviceWithName("dm").handler],
+        )
 
         # override cameraToImageCount so bias images are correctly saved to individual files
         # (necessary if using DataSaver)
         #self.cameraToImageCount = [2 * len(bias_modes) + 1]
 
-        self.table = None  # Apparently we need this, even though we're not using it? suspect there is a problem with ImmediateModeExperiment
+        #self.table = None  # Apparently we need this, even though we're not using it? suspect there is a problem with ImmediateModeExperiment
         self.time_start = time.time()
 
     ## Create the ActionTable needed to run the experiment. We loop
@@ -98,12 +99,14 @@ class ATBiasImageDatasetExperiment(Experiment):
         delayBeforeImaging = decimal.Decimal(".001")
         acc_patterns = []
         for biaslist, fprefix, newarea in self.abb_generator:
-
-            acc_patterns.extend(biaslist)
+			
+            actuator_pos = aoAlg.AdaptiveOpticsFunctions.ac_pos_from_zernike(self.aodev, biaslist, self.aodev.no_actuators)
+            acc_patterns.extend(actuator_pos)
 
             for abb in biaslist:
 
                 self.dmHandler.addToggle(curTime, table)
+
                 curTime += decimal.Decimal(self.dmHandler.getMovementTime())
                 curTime += decimal.Decimal(".001")
 
@@ -115,7 +118,7 @@ class ATBiasImageDatasetExperiment(Experiment):
 
         # queue all patterns? Is this too many?
         self.aodev.proxy.queue_patterns(np.array(acc_patterns))
-
+        return table
         ###Not sure how to set up stage movement triggers? What is the executor?
 
     def makeBiasPolytope(self, start_aberrations, offset_axes, nk, steps=(1,)):
