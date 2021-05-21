@@ -1,0 +1,44 @@
+{
+    "0": [
+        "28CS-L45-90-45m-N2-MSE-xAR5CCFJ2-e3000-5000r25-175-HN-NB-rlu-A45C67S11DREAL37R21-IM15-TrN3-CA025-ScycLR-Mpl-adW-b25s6-1p200g-mpk5L-p05-92",
+        "",
+        [],
+        []
+    ],
+    "9": [
+        "28CM-L45-90-45-N2-MSE-xAR5CCFLC-e3000-5000r25-175-HN-NB-rlu-A45C67S11DREAL37r10-IM04-TrN3-CA025-cyLR3-Mpl-adW-b25s6-1p200g-mpk5L-p05-NBs5",
+        "S",
+        [],
+        [
+            "1"
+        ]
+    ],
+    "10": [
+        "4-L45-90-45-N2-WE-xAR5CCFLC-e10-500r25-175-HN-rlu-A45C67S11DREAL37R10-B2_ci-IM0.67-TrN3-CA025-LRR-Mpl-adW-b25s6-1p400g-PKFS-p05-19",
+        [],
+        [
+            "4",
+            "5",
+            "6",
+            "7",
+            "10"
+        ],
+        [
+            "2"
+        ]
+    ],
+    "-1": [
+        "4-L45-90-45-N2-WE-xAR5CCFLC-e10-500r25-175-HN-rlu-A45C67S11DREAL37R10-B2_ci-IM0.67-TrN3-CA025-LRR-Mpl-adW-b25s6-1p400g-PKFS-p05-19",
+        [],
+        [
+            "4",
+            "5",
+            "6",
+            "7",
+            "10"
+        ],
+        [
+            "1"
+        ]
+    ]
+}
