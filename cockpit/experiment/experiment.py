@@ -137,7 +137,7 @@ class Experiment:
 
         self._run_thread = None
 
-        # Check for save paths that don't actually have a final filename
+         # Check for save paths that don't actually have a final filename
         # (i.e. just point to a directory); those aren't valid.
         if not os.path.basename(self.savePath):
             self.savePath = ''
@@ -148,6 +148,8 @@ class Experiment:
         if self.zPositioner is not None:
             # It may be None in some special experiments that don't do Z
             # stacks.
+            print ('experiment zpos;',self.zPositioner)
+            print ('exp pos handler ', cockpit.interfaces.stageMover.mover.curHandlerIndex)
             self.allHandlers.append(self.zPositioner)
         # Ensure all handlers are experiment-eligible.
         for handler in self.allHandlers:
@@ -219,7 +221,7 @@ class Experiment:
                 self.cameraToIsReady[camera] = False
 
         self.createValidActionTable()
-        if self.numReps > 1 and self.repDuration < self.table.lastActionTime / 1000:
+        if self.numReps > 1 and self.table and self.repDuration < self.table.lastActionTime / 1000:
             warning = "Repeat duration is less than the time required to run " \
                       "one repeat. Choose:" \
                       "\n    'OK' to run repeats as fast as possible;" \
@@ -299,8 +301,8 @@ class Experiment:
         cockpit.interfaces.stageMover.waitForStop()
         # TODO: Handling multiple movers on an axis is broken. Do not proceed if
         # anything but the innermost Z mover is selected. Needs a proper fix.
-        if (cockpit.interfaces.stageMover.mover.curHandlerIndex
-            < len(depot.getSortedStageMovers()[2])-1):
+        # IMD:- Further hack to allow piezo and remotez on deepsim
+        if (cockpit.interfaces.stageMover.mover.curHandlerIndex == 0):
             wx.MessageBox("Wrong axis mover selected.")
             raise Exception("Wrong axis mover selected.")
         # Prepare our position.
